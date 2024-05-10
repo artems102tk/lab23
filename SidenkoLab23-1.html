@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Модульне вікно</title>
+</head>
+<body>
+
+<script>
+// JavaScript код тут
+
+// Об'єкт, що містить інформацію про мову та дні тижня
+const languageData = {
+    ua: ["понеділок", "вівторок", "середа", "четвер", "п'ятниця", "субота", "неділя"],
+    en: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+};
+
+// Функція для виведення модульного вікна з питанням
+function askLanguage() {
+    let language = prompt("Виберіть мову “ua” або “en”?");
+    language = language.toLowerCase(); // Переведення введеного тексту у нижній регістр
+
+    if (language !== "ua" && language !== "en") {
+        alert("Неправильний ввід даних. Будь ласка, введіть 'ua' або 'en'.");
+        askLanguage(); // Повторне викликання функції, якщо введені дані неправильні
+    } else {
+        askDay(language); // Виклик функції для введення номеру дня тижня
+    }
+}
+
+// Функція для виведення модульного вікна з питанням про номер дня тижня
+function askDay(language) {
+    let dayNumber = parseInt(prompt(language === "ua" ? "Введіть номер дня неділі від 1 до 7?" : "Enter the day number of the week (from 1 to 7)?"));
+
+    if (isNaN(dayNumber) || dayNumber < 1 || dayNumber > 7) {
+        alert("Неправильний ввід даних. Будь ласка, введіть число від 1 до 7.");
+        askDay(language); // Повторне викликання функції, якщо введені дані неправильні
+    } else {
+        // Виведення результату
+        alert(language === "ua" ? `День неділі: ${languageData.ua[dayNumber - 1]}` : `Day of the week: ${languageData.en[dayNumber - 1]}`);
+    }
+}
+
+// Початок програми - виклик функції для вибору мови
+askLanguage();
+</script>
+
+</body>
+</html>

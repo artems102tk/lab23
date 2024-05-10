@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Електрична мережа</title>
+</head>
+<body>
+<h1>Калькулятор електричної мережі</h1>
+
+<div>
+  <label for="electricityStations">Електростанції (1-100 МВт)</label>
+  <input type="number" id="electricityStations" min="1" max="100" value="10">
+</div>
+
+<div>
+  <label for="solarPanels">Сонячні панелі (1-5 МВт/день)</label>
+  <input type="number" id="solarPanels" min="1" max="5" value="3">
+</div>
+
+<div>
+  <label for="houses">Житлові будинки (1-400 квартир)</label>
+  <input type="number" id="houses" min="1" max="400" value="50">
+</div>
+
+<div>
+  <label for="transmissionLines">Лінії електропередачі</label>
+  <div id="transmissionLinesContainer">
+    <div class="line">
+      <input type="number" class="capacity" placeholder="Потужність (МВт)">
+      <input type="number" class="price" placeholder="Ціна (у.о)">
+    </div>
+  </div>
+  <button onclick="addLine()">Додати лінію</button>
+</div>
+
+<button onclick="calculateElectricity()">Розрахувати</button>
+
+<div id="result"></div>
+
+<script>
+  function addLine() {
+    const container = document.getElementById("transmissionLinesContainer");
+    const lineDiv = document.createElement("div");
+    lineDiv.classList.add("line");
+    lineDiv.innerHTML = `
+      <input type="number" class="capacity" placeholder="Потужність (МВт)">
+      <input type="number" class="price" placeholder="Ціна (у.о)">
+    `;
+    container.appendChild(lineDiv);
+  }
+
+  function calculateElectricity() {
+    const electricityStations = parseInt(document.getElementById("electricityStations").value);
+    const solarPanels = parseInt(document.getElementById("solarPanels").value);
+    const houses = parseInt(document.getElementById("houses").value);
+    const linesDivs = document.querySelectorAll("#transmissionLinesContainer .line");
+
+    const transmissionLines = [];
+    linesDivs.forEach(div => {
+      const capacity = parseInt(div.querySelector(".capacity").value);
+      const price = parseInt(div.querySelector(".price").value);
+      transmissionLines.push({ capacity, price });
+    });
+
+    let totalElectricityNeededDay = 4 * houses;
+    let totalElectricityNeededNight = houses;
+
+    totalElectricityNeededDay += electricityStations * 100 + solarPanels * 3;
+    
+    let totalCost = 0;
+    transmissionLines.forEach(line => {
+      if (line.price > 0) {
+        totalCost += Math.min(line.capacity, totalElectricityNeededDay) * line.price;
+        totalElectricityNeededDay -= Math.min(line.capacity, totalElectricityNeededDay);
+      } else {
+        totalCost += Math.min(-line.price, totalElectricityNeededNight) * line.price;
+        totalElectricityNeededNight -= Math.min(-line.price, totalElectricityNeededNight);
+      }
+    });
+
+    const resultElement = document.getElementById("result");
+    resultElement.innerHTML = `
+      <p>Електрика, необхідна вдень: ${totalElectricityNeededDay} МВт</p>
+      <p>Електрика, необхідна вночі: ${totalElectricityNeededNight} МВт</p>
+      <p>Загальна вартість/прибуток: ${totalCost} у.о.</p>
+    `;
+  }
+</script>
+
+</body>
+</html>
